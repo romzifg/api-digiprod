@@ -94,7 +94,6 @@ export class AuthService {
                 await this.userRepo.existPhoneFromOtherUser(phone_number, meUuid) :
                 await this.userRepo.findByPhoneNumber(phone_number)
 
-            console.log(phone_numberUsed)
             if (phone_numberUsed) throw new BadRequestException(authConstant.PHONE_ALREADY_EXIST)
         }
     }
@@ -142,6 +141,8 @@ export class AuthService {
             const payload = this.buildAuthPayload(user)
             const access_token = this.jwt.sign(payload)
 
+            console.log(payload)
+
             return {
                 access_token,
                 user: payload
@@ -156,7 +157,6 @@ export class AuthService {
         isCreator = false
     ): Promise<IAuthUserPayload> {
         try {
-            console.log(data.phone_number)
             await this.assertUniqueEmailAndPhoneNumber(undefined, data.email, data.phone_number)
             let job: Job | null = null
 
@@ -299,6 +299,7 @@ export class AuthService {
 
     public async getProfile(me: Pick<IAuthUserPayload, 'uuid' | 'role'>): Promise<any> {
         try {
+            console.log('me', me)
             const user = await this.userRepo.findByUuid(me.uuid)
             if (!user) {
                 throw new NotFoundException(generalConstant.USER_NOT_FOUND)

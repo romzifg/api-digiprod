@@ -39,7 +39,7 @@ export class AuthController {
     return await this.authService.register(data, false)
   }
 
-  @UseGuards(JwtAuthGuard, RoleGuard)
+  @UseGuards(JwtAuthGuard)
   @Roles('user', 'creator')
   @Get('profile')
   public async getProfile(@Request() req: any): Promise<any> {

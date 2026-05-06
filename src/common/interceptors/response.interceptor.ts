@@ -3,7 +3,6 @@ import { Reflector } from '@nestjs/core';
 import { map, Observable } from 'rxjs';
 import { RESPONSE_MESSAGE, RESPONSE_OPTS, ResponseOpts } from '../decorators/response.decorator';
 import { statusConstant } from 'src/constants/status.constant';
-import { access } from 'fs';
 
 type Envelope<T> = {
   status: 'success' | 'error';
@@ -125,7 +124,7 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, Envelope<T>> {
             code,
             status: statusConstant.SUCCESS,
             message,
-            data: this.cammelToSnakeCase(raw),
+            data: this.cammelToSnakeCase(raw.user),
             access_token: raw.access_token,
           } as any
         }

@@ -10,6 +10,9 @@ import { ThrottlerModule } from '@nestjs/throttler';
 import { RepositoryModule } from './repositories/repository.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { CategoryModule } from './modules/category/category.module';
+import { TypeModule } from './modules/type/type.module';
+import { JobModule } from './modules/job/job.module';
 
 @Module({
   imports: [
@@ -86,6 +89,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     ClientModule,
     RepositoryModule,
     AuthModule,
+    CategoryModule,
+    TypeModule,
+    JobModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -2,7 +2,7 @@ import { Injectable, Logger } from "@nestjs/common";
 import { CopyObjectCommand, DeleteObjectCommand, HeadObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { GetParameterCommand, SSMClient } from "@aws-sdk/client-ssm";
 import { awsContant } from "src/constants/aws.contant";
-import path from "path";
+import * as path from "path";
 import { randomUUID } from "crypto";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { IAwsEnvironment } from "src/interfaces/aws.interface";

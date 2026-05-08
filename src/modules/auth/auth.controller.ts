@@ -49,7 +49,7 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles('user')
-  @Patch('profile/creator')
+  @Patch('profile/user')
   @UseInterceptors(FileInterceptor('photo'))
   public async updateUserProfile(@Request() req: any, @Body() dto: UpdateUserProfileDto, @UploadedFile() file: Express.Multer.File): Promise<any> {
     const user = req.user

@@ -52,7 +52,7 @@ export class UserRepository {
 
     public async update(uuid: string, data: DeepPartial<User>): Promise<User | null> {
         await this.userRepository.update({ uuid }, data);
-        return this.userRepository.findOne({
+        return await this.userRepository.findOne({
             where: {
                 uuid: uuid
             }

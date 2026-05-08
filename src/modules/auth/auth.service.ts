@@ -141,8 +141,6 @@ export class AuthService {
             const payload = this.buildAuthPayload(user)
             const access_token = this.jwt.sign(payload)
 
-            console.log(payload)
-
             return {
                 access_token,
                 user: payload
@@ -265,7 +263,7 @@ export class AuthService {
 
     public async updateBankAccount(uuid: string, data: UpdateBankAccountDto): Promise<any> {
         try {
-            const patch: any = this.composePatch({
+            const patch: any = await this.composePatch({
                 bank: data.bank,
                 bank_account_name: data.bank_account_name,
                 bank_account_number: data.bank_account_number
@@ -286,11 +284,11 @@ export class AuthService {
 
     public async updatePasswordCreator(uuid: string, data: UpdateCreatorProfileDto): Promise<any> {
         try {
-            const patch: any = this.composePatch({
+            const patch: any = await this.composePatch({
                 password: data.password
             }, data.password, null, null)
 
-            await this.userRepo.update(uuid, patch)
+            await this.userRepo.update(uuid, { password: patch.plainPassword })
             return true
         } catch (error) {
             this.handleError(error)
@@ -299,7 +297,6 @@ export class AuthService {
 
     public async getProfile(me: Pick<IAuthUserPayload, 'uuid' | 'role'>): Promise<any> {
         try {
-            console.log('me', me)
             const user = await this.userRepo.findByUuid(me.uuid)
             if (!user) {
                 throw new NotFoundException(generalConstant.USER_NOT_FOUND)

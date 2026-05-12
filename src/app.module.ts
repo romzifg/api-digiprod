@@ -13,6 +13,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CategoryModule } from './modules/category/category.module';
 import { TypeModule } from './modules/type/type.module';
 import { JobModule } from './modules/job/job.module';
+import { DashboardModule } from './modules/dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -92,6 +93,7 @@ import { JobModule } from './modules/job/job.module';
     CategoryModule,
     TypeModule,
     JobModule,
+    DashboardModule,
   ],
   controllers: [AppController],
   providers: [AppService],

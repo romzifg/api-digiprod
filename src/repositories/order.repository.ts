@@ -150,7 +150,7 @@ export class OrderRepository {
         return parseInt(result?.cnt ?? 0)
     }
 
-    public async getLatestOrder(authorUuid?: string): Promise<Order[]> {
+    public async findLatestOrder(authorUuid?: string): Promise<Order[]> {
         const options: FindManyOptions<Order> = {
             select: {
                 id: true,
@@ -219,7 +219,7 @@ export class OrderRepository {
         return parseInt(result?.total_revenue ?? 0)
     }
 
-    public async getTotalRevenuePerType(typeCode: string, authorUuid?: string): Promise<number> {
+    public async getTotalRevenuePerType(typeCode: string, authorUuid?: string): Promise<Order[]> {
         const whereClause: FindManyOptions<Order> = {
             where: {
                 status: orderContant.SUCCESS,
@@ -236,7 +236,7 @@ export class OrderRepository {
             }
         }
 
-        return await this.orderRepository.count(whereClause)
+        return await this.orderRepository.find(whereClause)
     }
 
     public async create(order: DeepPartial<Order>, queryRunner: QueryRunner): Promise<Order> {

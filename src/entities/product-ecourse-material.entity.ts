@@ -24,7 +24,7 @@ export class ProductEcourseMaterial {
 
     @OneToMany(() => ProductEcourseSubMaterial, (product) => product.productEcourseMaterial, { onDelete: 'CASCADE' })
     @JoinColumn({ name: 'product_id' })
-    productEcourseSubMaterials: ProductEcourseSubMaterial
+    productEcourseSubMaterials: ProductEcourseSubMaterial[]
 
     @CreateDateColumn({
         type: 'timestamp',

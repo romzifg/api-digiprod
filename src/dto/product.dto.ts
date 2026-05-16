@@ -81,7 +81,7 @@ export class ProductDto {
     @IsNumber()
     @IsNotEmpty()
     @Type(() => Number)
-    webiner_duration: number
+    webinar_duration: number
 
     @ValidateIf((o) => o.type_code == typeConstant.WEBINAR)
     @Matches(/^([01]\d|2[0-3]):[0-5]\d$/)
@@ -90,7 +90,7 @@ export class ProductDto {
 
     @ValidateIf((o) => o.type_code == typeConstant.WEBINAR)
     @IsNotEmpty()
-    webinar_date: string
+    webinar_date: Date
 
     @ValidateIf((o) => o.type_code == typeConstant.WEBINAR)
     @IsNotEmpty()

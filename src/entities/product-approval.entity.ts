@@ -1,5 +1,6 @@
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Product } from "./product.entity";
+import { IsOptional } from "class-validator";
 
 @Entity({ name: 'product_approvals' })
 export class ProductApproval {
@@ -20,7 +21,8 @@ export class ProductApproval {
         type: 'text',
         nullable: true
     })
-    note: string
+    @IsOptional()
+    note?: string | null
 
     @ManyToOne(() => Product, (product) => product.productApprovals)
     @JoinColumn({ name: 'product_id' })

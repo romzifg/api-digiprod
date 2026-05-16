@@ -10,8 +10,8 @@ export class ProductVoucherDetailRepository {
         private readonly productVoucherDetailRepository: Repository<ProductVoucherDetail>
     ) { }
 
-    public async findVoucherActiveByProductId(productId: number): Promise<ProductVoucherDetail[]> {
-        return await this.productVoucherDetailRepository.find({
+    public async findVoucherActiveByProductId(productId: number): Promise<ProductVoucherDetail | null> {
+        return await this.productVoucherDetailRepository.findOne({
             where: {
                 product: {
                     id: productId

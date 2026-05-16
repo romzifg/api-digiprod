@@ -14,6 +14,7 @@ import { CategoryModule } from './modules/category/category.module';
 import { TypeModule } from './modules/type/type.module';
 import { JobModule } from './modules/job/job.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
+import { ProductModule } from './modules/product/product.module';
 
 @Module({
   imports: [
@@ -94,6 +95,7 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
     TypeModule,
     JobModule,
     DashboardModule,
+    ProductModule,
   ],
   controllers: [AppController],
   providers: [AppService],

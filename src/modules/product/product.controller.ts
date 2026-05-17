@@ -8,7 +8,7 @@ import { CreateProductDto } from 'src/dto/create-product.dto';
 import { UpdateProductDto } from 'src/dto/update-product.dto';
 import { ApproveRejectDto } from 'src/dto/approve-reject.dto';
 
-@Controller('product')
+@Controller('products')
 export class ProductController {
   constructor(private readonly productService: ProductService) { }
 
@@ -51,6 +51,13 @@ export class ProductController {
     return this.productService.getAllForVoucher(req.user.uuid);
   }
 
+  @Get('by-type')
+  public async getForLandingPage(
+    @Query() params: any,
+  ) {
+    return this.productService.getProductLandingPage(params);
+  }
+
   @Get(':uuid')
   public async getByUuidForUser(
     @Param('uuid') uuid: string,
@@ -65,13 +72,6 @@ export class ProductController {
     @Param('uuid') uuid: string,
   ) {
     return this.productService.getByUuidForCreatorOrAdmin(uuid);
-  }
-
-  @Get('by-type')
-  public async getForLandingPage(
-    @Query() params: any,
-  ) {
-    return this.productService.getProductLandingPage(params);
   }
 
   @UseGuards(JwtAuthGuard, RoleGuard)
@@ -111,7 +111,7 @@ export class ProductController {
     @Param('uuid') uuid: string,
     @Body() data: any,
   ) {
-    return this.productService.reSubmitProduct(uuid, data);
+    return this.productService.reSubmitProduct(uuid, data.status);
   }
 
   @UseGuards(JwtAuthGuard, RoleGuard)

@@ -72,20 +72,23 @@ export class AwsUtil {
     }
 
     public async finalizeObjectFromTemp(tempKey: string, finalKey: string) {
-        await this.s3Client.send(new HeadObjectCommand({
-            Bucket: awsContant.BUCKET_NAME_AWS,
-            Key: tempKey,
-        }))
+        try {
+            await this.s3Client.send(new HeadObjectCommand({
+                Bucket: awsContant.BUCKET_NAME_AWS,
+                Key: tempKey,
+            }));
+        } catch (error) {
+            throw new Error(`Temp object not found: ${tempKey}`);
+        }
 
         await this.s3Client.send(new CopyObjectCommand({
             Bucket: awsContant.BUCKET_NAME_AWS,
-            CopySource: `/${awsContant.BUCKET_NAME_AWS}/${encodeURIComponent(tempKey)}`,
+            CopySource: `${awsContant.BUCKET_NAME_AWS}/${encodeURI(tempKey)}`, // ← Fixed
             Key: finalKey,
-            MetadataDirective: 'REPLACE',
             TaggingDirective: 'REPLACE',
             Tagging: 'stage=permanent',
             ACL: 'private',
-        }))
+        }));
 
         try {
             await this.s3Client.send(new DeleteObjectCommand({
@@ -93,7 +96,7 @@ export class AwsUtil {
                 Key: tempKey,
             }));
         } catch (error) {
-            this.logger.warn(`Failed to delete temp object ${tempKey}: ${(error as Error)?.stack}`);
+            this.logger.warn(`Failed to delete temp object ${tempKey}: ${error.message}`);
         }
 
         return this.getUrlS3(finalKey);

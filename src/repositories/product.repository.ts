@@ -43,7 +43,7 @@ export class ProductRepository {
             newNumber = lastNumber + 1
         }
 
-        return `PROD-${newNumber.toString().padStart(4, '0')}}`
+        return `PROD-${newNumber.toString().padStart(4, '0')}`
     }
 
     private sortColumn(params: Partial<IQueryParams>): object {
@@ -61,7 +61,7 @@ export class ProductRepository {
     }
 
     public async update(uuid: string, data: DeepPartial<Product>): Promise<UpdateResult> {
-        return await this.productRepository.update(uuid, data);
+        return await this.productRepository.update({ uuid: uuid }, data);
     }
 
     public async updateWithTransaction(productUuid: string, data: DeepPartial<Product>, queryRunner: QueryRunner): Promise<UpdateResult> {

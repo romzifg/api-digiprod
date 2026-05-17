@@ -47,7 +47,7 @@ export class ProductEcourseMaterialRepository {
         return await this.productEcourseMaterialRepository.save(newProductEcourseMaterial)
     }
 
-    public async delete(productUuid: string): Promise<void> {
-        await this.productEcourseMaterialRepository.delete({ product: { uuid: productUuid } })
+    public async delete(productId: number): Promise<void> {
+        await this.productEcourseMaterialRepository.delete({ product: { id: productId } })
     }
 }

@@ -31,12 +31,17 @@ import { CreateProductDto } from 'src/dto/create-product.dto';
 import { UpdateProductDto } from 'src/dto/update-product.dto';
 import { ApproveRejectDto } from 'src/dto/approve-reject.dto';
 import { ProductApproval } from 'src/entities/product-approval.entity';
+import { DataSource, EntityManager } from 'typeorm';
+import { ProductEcourseSubMaterial } from 'src/entities/product-ecourse-sub-material.entity';
+import { ProductLearnPoint } from 'src/entities/product-learn-point.entity';
+import { ProductAudience } from 'src/entities/product-audience.entity';
 
 @Injectable()
 export class ProductService {
     private logger: Logger = new Logger(ProductService.name);
 
     constructor(
+        private readonly dataSource: DataSource,
         private readonly productRepository: ProductRepository,
         private readonly productLearnPointRepository: ProductLearnPointRepository,
         private readonly productAudienceRepository: ProductAudienceRepository,
@@ -126,7 +131,11 @@ export class ProductService {
         }
     }
 
-    private async createLearnPoint(data: ProductDto, product: Product): Promise<void> {
+    private async createLearnPoint(
+        data: ProductDto,
+        product: Product,
+        manager: EntityManager
+    ): Promise<void> {
         const learnPoints = [...data.learn_points]
 
         if (learnPoints && learnPoints.length > 0) {
@@ -135,11 +144,15 @@ export class ProductService {
                 product: product,
             }))
 
-            await this.productLearnPointRepository.create(learnPointPayload)
+            await manager.save(ProductLearnPoint, learnPointPayload)
         }
     }
 
-    private async createAudience(data: ProductDto, product: Product): Promise<void> {
+    private async createAudience(
+        data: ProductDto,
+        product: Product,
+        manager: EntityManager
+    ): Promise<void> {
         const audiences = [...data.audiences]
 
         if (audiences && audiences.length > 0) {
@@ -148,11 +161,15 @@ export class ProductService {
                 product: product,
             }))
 
-            await this.productAudienceRepository.create(audiencePayload)
+            await manager.save(ProductAudience, audiencePayload)
         }
     }
 
-    private async createEcourseMaterial(data: ProductDto, product: Product): Promise<void> {
+    private async createEcourseMaterial(
+        data: ProductDto,
+        product: Product,
+        manager: EntityManager
+    ): Promise<void> {
         const materials = [...data.ecourse_materials]
 
         if (!materials || materials.length == 0) return
@@ -164,18 +181,19 @@ export class ProductService {
         }))
 
         const saveMaterials = await this.productEcourseMaterialRepository.create(materialPayload)
+
         const subPayload = saveMaterials.flatMap((mat, i) =>
             (materials[i]?.ecourse_sub_materials ?? []).map(sm => ({
                 uuid: randomUUID(),
                 title: sm.title,
                 video_url: sm.video_url,
                 duration: sm.duration,
-                product_eccourse_material: mat,
+                productEcourseMaterial: mat,
             }))
         )
 
         if (subPayload.length > 0) {
-            await this.productEcourseSubMaterialRepository.create(subPayload)
+            await manager.save(ProductEcourseSubMaterial, subPayload)
         }
     }
 
@@ -206,9 +224,8 @@ export class ProductService {
         }
     }
 
-    public async finilizeObjectFromTemp(imageKey: string): Promise<string> {
+    public async finilizeObjectFromTemp(productUuid: string, imageKey: string, isEbook: boolean = false): Promise<string> {
         try {
-            const productUuid = randomUUID()
             let imageUrl: string | undefined
             if (imageKey) {
                 if (!imageKey.startsWith('temp/')) {
@@ -216,7 +233,8 @@ export class ProductService {
                 }
 
                 const ext = path.extname(imageKey || '.png')
-                const finalKey = `products/${productUuid}/${randomUUID()}${ext}`
+                let finalKey = `products/images/${productUuid}/${randomUUID()}${ext}`
+                if (isEbook) finalKey = `products/ebooks/${productUuid}/${randomUUID()}${ext}`
 
                 imageUrl = await this.awsUtil.finalizeObjectFromTemp(imageKey, finalKey)
             }
@@ -376,7 +394,7 @@ export class ProductService {
                 curriculum: curriculumData,
                 author: {
                     name: product.author.name,
-                    profession: product.author.job.name,
+                    profession: product.author.job?.name || null,
                     bio: product.author.bio,
                     photo: product.author.photo
                 },
@@ -395,34 +413,36 @@ export class ProductService {
 
     public async create(data: CreateProductDto, authorUuid: string): Promise<any> {
         try {
-            const entities = await this.getRequiredEntities(data, authorUuid)
-            const productType = entities.type
-            const baseProduct = this.initializeBaseProduct(data, entities)
-            const typeSpesificData = this.getProductSpesificData(productType, data)
-            const finalProductData = {
-                ...baseProduct,
-                ...typeSpesificData
-            }
+            return await this.dataSource.transaction(async (manager) => {
+                const entities = await this.getRequiredEntities(data, authorUuid)
+                const productType = entities.type
+                const baseProduct = this.initializeBaseProduct(data, entities)
+                const typeSpesificData = this.getProductSpesificData(productType, data)
+                const finalProductData = {
+                    ...baseProduct,
+                    ...typeSpesificData
+                }
 
-            const newProduct = await this.productRepository.create(finalProductData)
-            await Promise.all([
-                this.createAudience(data, newProduct),
-                this.createLearnPoint(data, newProduct),
-            ])
+                const newProduct = await this.productRepository.create(finalProductData)
+                await Promise.all([
+                    this.createAudience(data, newProduct, manager),
+                    this.createLearnPoint(data, newProduct, manager),
+                ])
 
-            if (productType.name.toLowerCase() == typeConstant.ECOURSE.toLowerCase()) {
-                await this.createEcourseMaterial(data, newProduct)
-            }
+                if (productType.name.toLowerCase() == typeConstant.ECOURSE.toLowerCase()) {
+                    await this.createEcourseMaterial(data, newProduct, manager)
+                }
 
-            const imageUrl = await this.finilizeObjectFromTemp(data.image_key)
-            await this.productRepository.update(newProduct.uuid, { image: imageUrl })
+                const imageUrl = await this.finilizeObjectFromTemp(newProduct.uuid, data.image_key)
+                await this.productRepository.update(newProduct.uuid, { image: imageUrl })
 
-            if (productType.name.toLowerCase() == typeConstant.EBOOK.toLowerCase()) {
-                const ebookLink = await this.finilizeObjectFromTemp(data.ebook_link)
-                await this.productRepository.update(newProduct.uuid, { ebook_link: ebookLink })
-            }
+                if (productType.name.toLowerCase() == typeConstant.EBOOK.toLowerCase()) {
+                    const ebookLink = await this.finilizeObjectFromTemp(newProduct.uuid, data.ebook_link, true)
+                    await this.productRepository.update(newProduct.uuid, { ebook_link: ebookLink })
+                }
 
-            return await this.productRepository.findByUuid(newProduct.uuid)
+                return await this.productRepository.findByUuid(newProduct.uuid)
+            })
         } catch (error) {
             this.logger.error(error)
             throw error
@@ -431,53 +451,77 @@ export class ProductService {
 
     public async update(data: UpdateProductDto, productUuid: string): Promise<any> {
         try {
-            const product = await this.productRepository.findByUuid(productUuid)
-            if (!product) {
-                throw new NotFoundException(generalConstant.PRODUCT_NOT_FOUND)
-            }
-
-            const entities = await this.getRequiredEntities(data, product.author.uuid)
-            const productType = entities.type
-            const baseProduct = this.initializeBaseProduct(data, entities)
-            const typeSpesificData = this.getProductSpesificData(productType, data)
-            const finalProductData = {
-                ...baseProduct,
-                ...typeSpesificData
-            }
-
-            await this.productRepository.update(productUuid, finalProductData)
-            await Promise.all([
-                this.productLearnPointRepository.delete(product),
-                this.productAudienceRepository.delete(product)
-            ])
-            await Promise.all([
-                this.createAudience(data, product),
-                this.createLearnPoint(data, product),
-            ])
-
-            if (productType.name.toLowerCase() == typeConstant.ECOURSE.toLowerCase()) {
-                await this.productEcourseMaterialRepository.delete(product.uuid)
-                const eCourseMaterial = await this.productEcourseMaterialRepository.findByProductId(product.id)
-                if (eCourseMaterial.length > 0) {
-                    for (const material of eCourseMaterial) {
-                        await this.productEcourseSubMaterialRepository.delete(material)
-                    }
+            return await this.dataSource.transaction(async (manager) => {
+                const product = await this.productRepository.findByUuid(productUuid)
+                if (!product) {
+                    throw new NotFoundException(generalConstant.PRODUCT_NOT_FOUND)
                 }
 
-                await this.createEcourseMaterial(data, product)
-            }
+                const entities = await this.getRequiredEntities(data, product.author.uuid)
+                const productType = entities.type
+                const baseProduct = this.initializeBaseProduct(data, entities, true)
+                const typeSpesificData = this.getProductSpesificData(productType, data)
+                const finalProductData = {
+                    ...baseProduct,
+                    ...typeSpesificData
+                }
 
-            if (data?.image_key) {
-                const imageUrl = await this.finilizeObjectFromTemp(data.image_key)
-                await this.productRepository.update(product.uuid, { image: imageUrl })
-            }
+                await manager.update(Product, { uuid: productUuid }, finalProductData)
+                if (product.productLearnPoints?.length > 0) {
+                    await manager.delete(ProductLearnPoint, {
+                        product: { id: product.id }
+                    })
+                }
 
-            if (data?.ebook_link) {
-                const ebookLink = await this.finilizeObjectFromTemp(data.ebook_link)
-                await this.productRepository.update(product.uuid, { ebook_link: ebookLink })
-            }
+                if (product.productAudiences?.length > 0) {
+                    await manager.delete(ProductAudience, {
+                        product: { id: product.id }
+                    })
+                }
+                
+                await Promise.all([
+                    this.createAudience(data, product, manager),
+                    this.createLearnPoint(data, product, manager),
+                ])
 
-            return await this.productRepository.findByUuid(product.uuid)
+                if (productType.name.toLowerCase() == typeConstant.ECOURSE.toLowerCase()) {
+                    await this.productEcourseMaterialRepository.delete(product.id)
+                    const eCourseMaterial = await this.productEcourseMaterialRepository.findByProductId(product.id)
+                    if (eCourseMaterial.length > 0) {
+                        for (const material of eCourseMaterial) {
+                            await this.productEcourseSubMaterialRepository.delete(material)
+                        }
+                    }
+
+                    await this.createEcourseMaterial(data, product, manager)
+                }
+
+                if (data?.image_key) {
+                    const imageUrl = await this.finilizeObjectFromTemp(product.uuid, data.image_key)
+                    await this.productRepository.update(product.uuid, { image: imageUrl })
+                }
+
+                if (data?.ebook_link) {
+                    const ebookLink = await this.finilizeObjectFromTemp(product.uuid, data.ebook_link, true)
+                    await this.productRepository.update(product.uuid, { ebook_link: ebookLink })
+                }
+
+                return await manager.findOne(Product, {
+                    where: { uuid: productUuid },
+                    relations: {
+                        productAudiences: true,
+                        productLearnPoints: true,
+                        author: {
+                            job: true
+                        },
+                        productEcourseMaterials: {
+                            productEcourseSubMaterials: true
+                        },
+                        type: true,
+                        category: true
+                    }
+                })
+            })
         } catch (error) {
             this.logger.error(error)
             throw error

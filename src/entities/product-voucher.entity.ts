@@ -25,6 +25,7 @@ export class ProductVoucher {
 
     @Column({
         type: 'int',
+        default: 0
     })
     percentage: number
 

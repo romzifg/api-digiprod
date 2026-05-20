@@ -15,6 +15,7 @@ import { TypeModule } from './modules/type/type.module';
 import { JobModule } from './modules/job/job.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { ProductModule } from './modules/product/product.module';
+import { OrderModule } from './modules/order/order.module';
 
 @Module({
   imports: [
@@ -96,6 +97,7 @@ import { ProductModule } from './modules/product/product.module';
     JobModule,
     DashboardModule,
     ProductModule,
+    OrderModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -10,11 +10,11 @@ export class Order {
 
     @ManyToOne(() => User, (user) => user.orders)
     @JoinColumn({ name: 'user_id' })
-    user: User[]
+    user: User
 
     @ManyToOne(() => Product, (product) => product.orders)
     @JoinColumn({ name: 'product_id' })
-    product: Product[]
+    product: Product
 
     @OneToOne(() => Payment, (payment) => payment.order)
     payment: Payment

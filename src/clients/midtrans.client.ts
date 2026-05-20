@@ -8,11 +8,11 @@ import { IMidtransResponse } from "src/interfaces/midtrans.interface";
 
 @Injectable()
 export class MidtransClient {
-    constructor() { }
+    constructor(private readonly configService: ConfigService) { }
 
-    public async sendToMidtrans(data: MidtransDto, configService: ConfigService): Promise<IMidtransResponse | any> {
+    public async sendToMidtrans(data: MidtransDto): Promise<IMidtransResponse | any> {
         try {
-            const config = await getSecretValue(configService)
+            const config = await getSecretValue(this.configService)
             const snap = new Client.Snap({
                 isProduction: config.midtrans_is_production as any,
                 serverKey: config.midtrans_server_key as any,

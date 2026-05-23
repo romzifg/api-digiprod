@@ -18,6 +18,7 @@ import { ProductModule } from './modules/product/product.module';
 import { OrderModule } from './modules/order/order.module';
 import { PaymentModule } from './modules/payment/payment.module';
 import { ProductVoucherModule } from './modules/product-voucher/product-voucher.module';
+import { UserProductModule } from './modules/user-product/user-product.module';
 
 @Module({
   imports: [
@@ -102,6 +103,7 @@ import { ProductVoucherModule } from './modules/product-voucher/product-voucher.
     OrderModule,
     PaymentModule,
     ProductVoucherModule,
+    UserProductModule,
   ],
   controllers: [AppController],
   providers: [AppService],

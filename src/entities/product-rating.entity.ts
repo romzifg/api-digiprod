@@ -1,6 +1,7 @@
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Product } from "./product.entity";
 import { User } from "./user.entity";
+import { IsOptional } from "class-validator";
 
 @Entity({ name: 'product_ratings' })
 export class ProductRating {
@@ -16,7 +17,8 @@ export class ProductRating {
         type: 'text',
         nullable: true
     })
-    review: string
+    @IsOptional()
+    review: string | null
 
     @ManyToOne(() => Product, (product) => product.productRatings, { onDelete: 'CASCADE' })
     @JoinColumn({ name: 'product_id' })

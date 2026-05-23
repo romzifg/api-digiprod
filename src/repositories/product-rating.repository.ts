@@ -37,7 +37,7 @@ export class ProductRatingRepository {
         })
     }
 
-    public async create(productRating: DeepPartial<ProductRating>[]): Promise<ProductRating[]> {
+    public async create(productRating: DeepPartial<ProductRating>): Promise<ProductRating> {
         const newProductRating = this.productRatingRepository.create(productRating);
         return await this.productRatingRepository.save(newProductRating)
     }

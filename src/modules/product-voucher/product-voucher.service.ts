@@ -9,6 +9,8 @@ import { UserRepository } from 'src/repositories/user.repository';
 
 import * as moment from 'moment'
 import { randomUUID } from 'crypto';
+import { DataSource } from 'typeorm';
+import { ProductVoucherDetail } from 'src/entities/product-voucher-detail.entity';
 
 @Injectable()
 export class ProductVoucherService {
@@ -19,6 +21,8 @@ export class ProductVoucherService {
         private readonly productVoucherRepository: ProductVoucherRepository,
         private readonly productVoucherDetailRepository: ProductVoucherDetailRepository,
         private readonly userRepository: UserRepository,
+
+        private readonly dataSource: DataSource,
     ) { }
 
     public async getAll(userUuid: string): Promise<ProductVoucher[]> {
@@ -93,20 +97,13 @@ export class ProductVoucherService {
                 throw new BadRequestException(generalConstant.USER_NOT_FOUND);
             }
 
-            let voucher: ProductVoucher | null = null
-
-            for (const item of data.products) {
-                const productVoucher = await this.productVoucherDetailRepository.findVoucherActiveByProductId(item);
-                if (productVoucher) {
-                    throw new BadRequestException(`Product with name ${productVoucher.product.name} has already been active voucher`);
-                }
-
+            return await this.dataSource.transaction(async (manager) => {
                 const voucherExists = await this.productVoucherRepository.findByCode(data.code.toUpperCase())
                 if (voucherExists) {
                     throw new BadRequestException(generalConstant.VOUCHER_CODE_ALREADY_EXISTS);
                 }
 
-                voucher = await this.productVoucherRepository.create({
+                const voucher = await manager.save(ProductVoucher, {
                     uuid: randomUUID(),
                     title: data.title,
                     code: data.code.toUpperCase(),
@@ -117,10 +114,15 @@ export class ProductVoucherService {
                 })
 
                 let details: any = []
-                for (const prod of data.products) {
-                    const product = await this.productRepository.findById(prod);
+                for (const item of data.products) {
+                    const product = await this.productRepository.findById(item);
                     if (!product) {
                         throw new BadRequestException(generalConstant.PRODUCT_NOT_FOUND);
+                    }
+
+                    const productVoucher = await this.productVoucherDetailRepository.findVoucherActiveByProductId(item);
+                    if (productVoucher) {
+                        throw new BadRequestException(`Product with name ${productVoucher.product.name} has already been active voucher`);
                     }
 
                     details.push({
@@ -129,14 +131,10 @@ export class ProductVoucherService {
                     })
                 }
 
-                await this.productVoucherDetailRepository.create(details);
-            }
+                await manager.save(ProductVoucherDetail, details);
 
-            if (!voucher) {
-                throw new BadRequestException(generalConstant.VOUCHER_NOT_FOUND);
-            }
-
-            return await this.productVoucherRepository.findOne(voucher.uuid);
+                return await manager.findOne(ProductVoucher, { where: { uuid: voucher.uuid } });
+            })
         } catch (error) {
             this.logger.error(error);
             throw error;
@@ -145,43 +143,59 @@ export class ProductVoucherService {
 
     public async update(uuid: string, data: ProductVoucherDto): Promise<any> {
         try {
-            const voucher = await this.productVoucherRepository.findOne(uuid);
-            if (!voucher) {
-                throw new BadRequestException(generalConstant.VOUCHER_NOT_FOUND);
-            }
-
-            for (const item of data.products) {
-                const productVoucherDetail = await this.productVoucherDetailRepository.findVoucherActiveByProductId(item);
-                if (productVoucherDetail) {
-                    throw new BadRequestException(`Product with name ${productVoucherDetail.product.name} has already been active voucher`);
-                }
-            }
-
-            await this.productVoucherRepository.update(uuid, {
-                title: data.title,
-                code: data.code.toUpperCase(),
-                percentage: data.percentage,
-                end_date: data.end_date,
-                is_active: data.is_active ?? true,
-            })
-            await this.productVoucherDetailRepository.delete(voucher.id)
-
-            let details: any = []
-            for (const prod of data.products) {
-                const product = await this.productRepository.findById(prod);
-                if (!product) {
-                    throw new BadRequestException(generalConstant.PRODUCT_NOT_FOUND);
+            return await this.dataSource.transaction(async (manager) => {
+                const voucher = await this.productVoucherRepository.findOne(uuid);
+                if (!voucher) {
+                    throw new BadRequestException(generalConstant.VOUCHER_NOT_FOUND);
                 }
 
-                details.push({
-                    productVoucher: voucher,
-                    product: product
+                await manager.update(ProductVoucher, { uuid }, {
+                    title: data.title,
+                    code: data.code.toUpperCase(),
+                    percentage: data.percentage,
+                    end_date: data.end_date,
+                    is_active: data.is_active ?? true,
                 })
-            }
+                await manager.delete(ProductVoucherDetail, {
+                    productVoucher: { id: voucher.id },
+                });
 
-            await this.productVoucherDetailRepository.create(details);
+                let details: any = []
+                for (const item of data.products) {
+                    const product = await this.productRepository.findById(item);
+                    if (!product) {
+                        throw new BadRequestException(generalConstant.PRODUCT_NOT_FOUND);
+                    }
 
-            return await this.productVoucherRepository.findOne(uuid);
+                    const productVoucherDetail = await manager.findOne(ProductVoucherDetail, {
+                        where: {
+                            product: {
+                                id: item
+                            },
+                            productVoucher: {
+                                is_active: true
+                            }
+                        },
+                    });
+                    if (productVoucherDetail) {
+                        throw new BadRequestException(`Product with name ${productVoucherDetail.product.name} has already been active voucher`);
+                    }
+
+                    details.push({
+                        productVoucher: voucher,
+                        product: product
+                    })
+                }
+
+                await manager.save(ProductVoucherDetail, details);
+
+                return await manager.findOne(ProductVoucher, { 
+                    where: { uuid: uuid } ,
+                    relations: {
+                        productVoucherDetails: true
+                    },
+                });
+            })
         } catch (error) {
             this.logger.error(error);
             throw error;

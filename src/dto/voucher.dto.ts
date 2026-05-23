@@ -24,7 +24,7 @@ export class ProductVoucherDto {
     @IsArray()
     @IsNumber({}, { each: true })
     @ArrayNotEmpty()
-    product: number[];
+    products: number[];
 }
 
 export class ValidateProductVoucherDto {
@@ -34,5 +34,5 @@ export class ValidateProductVoucherDto {
 
     @IsNumber()
     @IsOptional()
-    product_id: number;
+    product_id: string;
 }

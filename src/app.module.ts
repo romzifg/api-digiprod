@@ -16,6 +16,8 @@ import { JobModule } from './modules/job/job.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { ProductModule } from './modules/product/product.module';
 import { OrderModule } from './modules/order/order.module';
+import { PaymentModule } from './modules/payment/payment.module';
+import { ProductVoucherModule } from './modules/product-voucher/product-voucher.module';
 
 @Module({
   imports: [
@@ -98,6 +100,8 @@ import { OrderModule } from './modules/order/order.module';
     DashboardModule,
     ProductModule,
     OrderModule,
+    PaymentModule,
+    ProductVoucherModule,
   ],
   controllers: [AppController],
   providers: [AppService],

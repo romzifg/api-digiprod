@@ -3,7 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Product } from "src/entities/product.entity";
 import { UserProduct } from "src/entities/user-product.entity";
 import { User } from "src/entities/user.entity";
-import { DeepPartial, FindManyOptions, FindOneOptions, Repository, UpdateResult } from "typeorm";
+import { DeepPartial, FindManyOptions, FindOneOptions, QueryRunner, Repository, UpdateResult } from "typeorm";
 
 @Injectable()
 export class UserProductRepository {
@@ -20,12 +20,12 @@ export class UserProductRepository {
         return await this.userProductRepository.findOne(params)
     }
 
-    public async create(userProduct: DeepPartial<UserProduct>): Promise<UserProduct> {
-        const newUserProduct = this.userProductRepository.create(userProduct);
-        return await this.userProductRepository.save(newUserProduct)
+    public async create(userProduct: DeepPartial<UserProduct>, queryRunner: QueryRunner): Promise<UserProduct> {
+        const newUserProduct = queryRunner.manager.create(UserProduct, userProduct);
+        return await queryRunner.manager.save(newUserProduct)
     }
 
-    public async update(product: Product, user: User, data: DeepPartial<UserProduct>): Promise<UpdateResult> {
-        return await this.userProductRepository.update({ product: product, user: user }, data);
+    public async update(product: Product, user: User, data: DeepPartial<UserProduct>, queryRunner: QueryRunner): Promise<UpdateResult> {
+        return await queryRunner.manager.update(UserProduct, { product: product, user: user }, data);
     }
 }

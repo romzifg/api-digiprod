@@ -19,5 +19,5 @@ export class OrderDto {
 
     @IsBoolean()
     @IsNotEmpty()
-    use_voucer: boolean;
+    use_voucher: boolean;
 }

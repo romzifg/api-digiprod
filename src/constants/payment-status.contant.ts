@@ -4,10 +4,10 @@ export const paymentStatusContant = {
     EXPIRED: 300,
 }
 
-export const paymentStatusLabel = {
-    [paymentStatusContant.PENDING]: 'Pending',
-    [paymentStatusContant.SETTLEMENT]: 'Settlement',
-    [paymentStatusContant.EXPIRED]: 'Expired',
+export const paymentStatusStringConstant = {
+    PENDING: 'pending',
+    SETTLEMENT: 'settlement',
+    EXPIRED: 'expired',
 }
 
 export const getPaymentStatus = (status: string): number => {

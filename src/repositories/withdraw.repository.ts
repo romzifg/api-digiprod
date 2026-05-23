@@ -5,7 +5,7 @@ import { Withdraw } from "src/entities/withdraw.entity";
 import { User } from "src/entities/user.entity";
 import { DeepPartial, FindManyOptions, FindOneOptions, FindOptionsWhere, IsNull, Not, QueryRunner, Repository, UpdateResult } from "typeorm";
 import { IQueryParams } from "src/interfaces/database.interface";
-import moment from "moment";
+import * as moment from "moment";
 
 @Injectable()
 export class WithdrawRepository {

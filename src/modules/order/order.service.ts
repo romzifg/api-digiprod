@@ -1,7 +1,7 @@
 import { PaymentRepository } from './../../repositories/payment.repository';
 import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { randomUUID } from 'crypto';
-import moment from 'moment';
+import * as moment from 'moment';
 import { MidtransClient } from 'src/clients/midtrans.client';
 import { generalConstant } from 'src/constants/general.constant';
 import { orderContant } from 'src/constants/order.contant';
@@ -245,7 +245,7 @@ export class OrderService {
                         amount: data.total_amount,
                         date: today,
                         status: orderContant.PENDING,
-                        use_voucher: data.use_voucer
+                        use_voucher: data.use_voucher
                     }
 
                     const newOrder = await this.orderRepository.create(order, queryRunner)

@@ -40,6 +40,14 @@ export class ProductEcourseSubMaterialRepository {
         })
     }
 
+    public async findByUuid(uuid: string): Promise<ProductEcourseSubMaterial | null> {
+        return await this.productEcourseSubMaterialRepository.findOne({
+            where: {
+                uuid
+            },
+        })
+    }
+
     public async create(data: DeepPartial<ProductEcourseSubMaterial>[]): Promise<ProductEcourseSubMaterial[]> {
         const newProductEcourseSubMaterial = this.productEcourseSubMaterialRepository.create(data);
         return await this.productEcourseSubMaterialRepository.save(newProductEcourseSubMaterial)

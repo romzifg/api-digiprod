@@ -19,6 +19,7 @@ import { OrderModule } from './modules/order/order.module';
 import { PaymentModule } from './modules/payment/payment.module';
 import { ProductVoucherModule } from './modules/product-voucher/product-voucher.module';
 import { UserProductModule } from './modules/user-product/user-product.module';
+import { UserActivityModule } from './modules/user-activity/user-activity.module';
 
 @Module({
   imports: [
@@ -104,6 +105,7 @@ import { UserProductModule } from './modules/user-product/user-product.module';
     PaymentModule,
     ProductVoucherModule,
     UserProductModule,
+    UserActivityModule,
   ],
   controllers: [AppController],
   providers: [AppService],

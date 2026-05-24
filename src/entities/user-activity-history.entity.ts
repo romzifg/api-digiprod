@@ -19,7 +19,7 @@ export class UserActivityHistory {
 
     @ManyToOne(() => ProductEcourseSubMaterial, (product) => product.userActivityHistories, { onDelete: 'CASCADE' })
     @JoinColumn({ name: 'ecourse_sub_material_id' })
-    ecourseSubMaterial: ProductEcourseSubMaterial
+    ecourseSubMaterial: ProductEcourseSubMaterial | null
 
     @ManyToOne(() => Type, (type) => type.userActivityHistory, { onDelete: 'CASCADE' })
     @JoinColumn({ name: 'type_id' })

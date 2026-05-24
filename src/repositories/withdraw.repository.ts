@@ -14,19 +14,10 @@ export class WithdrawRepository {
         private readonly withdrawRepository: Repository<Withdraw>
     ) { }
 
-    public async findAllWithPagination(params: IQueryParams, authorUuid: string): Promise<{ data: Withdraw[], total: number }> {
-        const offset: number = params.page * params.limit;
-        let whereClause: FindOptionsWhere<Withdraw>[] = []
-        if (authorUuid) {
-            const authorFilter: FindOptionsWhere<Withdraw> = {
-                user: {
-                    uuid: authorUuid
-                }
-            }
-            whereClause.push(authorFilter)
-        }
+    public async findAllWithPagination(params: IQueryParams, authorUuid: string | null): Promise<{ data: Withdraw[], total: number }> {
+        const offset: number = (params.page - 1) * params.limit;
 
-        const [data, total] = await this.withdrawRepository.findAndCount({
+        let queryOptions: FindManyOptions<Withdraw> = {
             select: {
                 id: true,
                 uuid: true,
@@ -34,17 +25,25 @@ export class WithdrawRepository {
                 status: true,
                 amount: true,
                 date: true,
-                updated_at: true
+                updated_at: true,
             },
-            where: whereClause,
             order: {
                 updated_at: 'DESC'
             },
             skip: offset,
             take: params.limit
-        })
+        };
 
-        return { data, total }
+        if (authorUuid) {
+            queryOptions.where = {
+                user: { uuid: authorUuid }
+            };
+            queryOptions.relations = ['user'];
+        }
+
+        const [data, total] = await this.withdrawRepository.findAndCount(queryOptions);
+
+        return { data, total };
     }
 
     public async findOne(params: FindOneOptions<Withdraw>): Promise<Withdraw | null> {

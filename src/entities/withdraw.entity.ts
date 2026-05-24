@@ -41,7 +41,7 @@ export class Withdraw {
         type: 'text',
         nullable: true
     })
-    proof_image: string
+    proof_image: string | null
 
     @CreateDateColumn({
         type: 'timestamp',

@@ -21,7 +21,7 @@ export class WithdrawApproval {
         type: 'text',
         nullable: true
     })
-    note: string
+    note: string | null
 
     @ManyToOne(() => User, (user) => user.withdrawApprovals, { onDelete: 'CASCADE' })
     @JoinColumn({ name: 'approval_id' })

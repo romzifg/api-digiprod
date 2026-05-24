@@ -2,7 +2,7 @@ export const generalConstant = {
     SOMETHING_WENT_WRONG: 'Something went wrong, please try again later.',
     TYPE_NOT_FOUND: 'Type not found.',
     CATEGORY_NOT_FOUND: 'Category not found.',
-    WITHDRAWAL_NOT_FOUND: 'Withdrawal not found.',
+    WITHDRAW_NOT_FOUND: 'Withdrawal not found.',
     USER_NOT_FOUND: 'User not found.',
     PRODUCT_NOT_FOUND: 'Product not found.',
     CURRICULUM_NOT_FOUND: 'Curriculum not found.',

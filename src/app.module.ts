@@ -20,22 +20,21 @@ import { PaymentModule } from './modules/payment/payment.module';
 import { ProductVoucherModule } from './modules/product-voucher/product-voucher.module';
 import { UserProductModule } from './modules/user-product/user-product.module';
 import { UserActivityModule } from './modules/user-activity/user-activity.module';
+import { WithdrawModule } from './modules/withdraw/withdraw.module';
 
 @Module({
   imports: [
-    // ConfigModule HARUS di-load PERTAMA dengan loader function
     ConfigModule.forRoot({
-      load: [configLoader], // Load config dari AWS/file
-      isGlobal: true, // Biar bisa dipakai di semua module tanpa re-import
-      cache: true, // Cache config untuk performa
+      load: [configLoader],
+      isGlobal: true,
+      cache: true,
     }),
 
-    // Throttler Module
     ThrottlerModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
-        const ttl = configService.get<number>('timeout', 10000);
-        const limit = configService.get<number>('rate_limit_max', 10);
+        const ttl = configService.get<number>('throttle_ttl', 60000);
+        const limit = configService.get<number>('throttle_limit', 10);
 
         return [{
           ttl,
@@ -44,7 +43,6 @@ import { UserActivityModule } from './modules/user-activity/user-activity.module
       }
     }),
 
-    // TypeORM Module
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
@@ -56,38 +54,43 @@ import { UserActivityModule } from './modules/user-activity/user-activity.module
         const dbName = configService.get<string>('db_name');
         const dbConnectionTimeout = configService.get<number>('db_connection_timeout', 30000);
         const dbAcquireTimeout = configService.get<number>('db_acquire_timeout', 30000);
-        const dbPoolSize = configService.get<number>('db_pool_size', 10);
+        const dbPoolSize = configService.get<number>('db_pool_size', 5);
 
         // Validation
-        if (!dbDialect) {
-          throw new Error(
-            'Database configuration error: db_dialect is missing. ' +
-            'Please check your config.json or AWS Parameter Store.'
-          );
+        if (!dbHost || !dbPort || !dbUsername || !dbPassword || !dbName) {
+          throw new Error('Missing required database configuration');
         }
 
-        if (!dbHost || !dbPort || !dbUsername || !dbPassword || !dbName) {
-          throw new Error(
-            'Database configuration error: Missing required fields. ' +
-            'Required: db_host, db_port, db_username, db_password, db_name'
-          );
-        }
+        const isRDS = dbHost.includes('rds.amazonaws.com');
+        const isProduction = process.env.NODE_ENV === 'production';
 
         return {
           type: dbDialect as 'postgres',
           host: dbHost,
-          port: dbPort,
+          port: typeof dbPort === 'string' ? parseInt(dbPort) : dbPort,
           username: dbUsername,
           password: dbPassword,
           database: dbName,
-          entities: [path.join(__dirname, 'entities/*.entity{.ts,.js}')],
-          ssl: { rejectUnauthorized: false },
-          synchronize: true, // ⚠️ SET FALSE DI PRODUCTION!
-          migrationsRun: true,
+          entities: [path.join(__dirname, '**/*.entity{.ts,.js}')],
+
+          // SSL Configuration for RDS
+          ssl: isRDS ? {
+            rejectUnauthorized: false
+          } : false,
+
+          // CRITICAL: Jangan synchronize di production!
+          synchronize: !isProduction,
+          migrationsRun: false,  // ← Set true jika sudah ada migrations
+          logging: !isProduction ? ['error', 'warn'] : false,
+
           extra: {
             connectionTimeoutMillis: dbConnectionTimeout,
             query_timeout: dbAcquireTimeout,
             max: dbPoolSize,
+            idleTimeoutMillis: 30000,
+            // Untuk RDS, tambahkan keepalive
+            keepAlive: true,
+            keepAliveInitialDelayMillis: 10000,
           }
         };
       }
@@ -106,6 +109,7 @@ import { UserActivityModule } from './modules/user-activity/user-activity.module
     ProductVoucherModule,
     UserProductModule,
     UserActivityModule,
+    WithdrawModule,
   ],
   controllers: [AppController],
   providers: [AppService],

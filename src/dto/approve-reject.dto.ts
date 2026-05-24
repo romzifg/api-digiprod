@@ -15,6 +15,6 @@ export class ApproveRejectDto {
     is_withdraw: boolean;
 
     @IsString()
-    @ValidateIf((o) => o.is_withdraw === true)
+    @ValidateIf((o) => o.is_withdraw && Number(o.status) == 200)
     proof_image_key: string;
 }

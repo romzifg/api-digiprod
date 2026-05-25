@@ -1,0 +1,137 @@
+service: digiprod-service
+framworkVersion: '3'
+
+useDotenv: true
+
+plugins:
+  - serverless-dotenv-plugin
+  - serverless-add-api-key
+  - serverless-plugin-warmup
+
+custom: 
+  apiKeys:
+    - name: ${env.API_KEY_NAME}
+      value: ${env.PRIVATE_API_KEY}
+
+  warmup:
+    default:
+      enabled: true
+      events: 
+        - schedule: rate(5 minutes)
+      concurrency: 1
+      prewarm: true
+      payload: 
+        source: 'serverless-plugin-warmup'
+      timeout: 10
+      name: ${self:service}-${self:provider.stage}-warmup
+      folderName: '_warmup'
+      cleanFolder: true
+      memorySize: 128
+      tags: 
+        warmed: 'true'
+  
+package: 
+  excludeDevDeveloper: true
+  individually: true
+  exclude: 
+    - .git/**
+    - venv/**
+    - node_modules/**
+
+provider: 
+  name: aws
+  runtime: nodejs20.x
+  memorySize: 2048
+  timeout: 30
+  stage: ${opt:stage, 'development'}
+  region: ${env.REGION_AWS}
+
+  apiGateway:
+    apiKeys:
+      - ${env.PRIVATE_API_KEY}
+    usagePlan: 
+      quota: 
+        limit: 1000000
+        offset: 2
+        period: MONTH
+      throttle: 
+        burstLimit: 300
+        rateLimit: 100
+    binaryMediaTypes:
+      - 'multipart/form-data'
+      - 'application/octet-stream'
+      - 'application/*'
+      - 'image/*'
+      - 'video/*'
+      - 'audio/*'
+
+  ecr: 
+    images:
+      app:
+        path: ./
+  
+  environment:
+    PORT: ${env.PORT}
+    SECRET_ACCESS_KEY_AWS: ${env.SECRET_ACCESS_KEY_AWS}
+    ACCESS_KEY_AWS: ${env.ACCESS_KEY_AWS}
+    REGION_AWS: ${env.REGION_AWS}
+    BUCKET_NAME_AWS: ${env.BUCKET_NAME_AWS}
+    PRIVATE_API_KEY: ${env.PRIVATE_API_KEY}
+    USAGE_PLAN_AWS: ${env.USAGE_PLAN_AWS}
+    API_KEY_NAME: ${env.API_KEY_NAME}
+    PARAMETER_STORES_NAMES: ${env.PARAMETER_STORES_NAMES}
+    NODE_ENV: ${env.NODE_ENV}
+    JWT_SCRET: ${env.JWT_SCRET}
+    JWT_EXPIRES_IN: ${env.JWT_EXPIRES_IN}
+
+functions:
+  main:
+    image:
+      name: app
+      command:
+        - dist/lambda.handler
+      entrypoint: 
+        - /lambda-entrypoint.sh
+    maximumRetryAttempts: 2
+    warmup:
+      default:
+        enabled: true
+
+events:
+  - http:
+      path: /api/v1/payments/webhook
+      method: POST
+      private: false
+      cors: 
+        origin: '*'
+        headers:
+          - Content-Type
+          - Authorization
+          - authentication
+          - X-API-Key
+          - x-api-key
+  - http: 
+      path: /
+      method: GET
+      private: true
+      cors: 
+        origin: '*'
+        headers:
+          - Content-Type
+          - Authorization
+          - authentication
+          - X-API-Key
+          - x-api-key
+
+  - http: 
+      path: /{proxy+}
+      method: ANY
+      private: true
+      cors: 
+        origin: '*'
+        headers:
+          - Content-Type
+          - Authorization
+          - authentication
+          - X-API-Key
+          - x-api-key

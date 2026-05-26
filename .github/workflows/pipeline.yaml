@@ -70,7 +70,7 @@ jobs:
         run: pnpm add -g serverless@v3 @nestjs/cli
 
       - name: Configure AWS credential
-        use: aws-action/configure-aws-credentials@v4
+        uses: aws-action/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.ACCESS_KEY_AWS }}
           aws-secret-access-key: ${{ secrets.SECRET_ACCESS_KEY_AWS }}

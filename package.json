@@ -26,7 +26,7 @@
     "@aws-sdk/client-ssm": "^3.943.0",
     "@aws-sdk/s3-request-presigner": "^3.943.0",
     "@codegenie/serverless-express": "^4.17.0",
-    "@faker-js/faker": "^10.1.0",
+    "@faker-js/faker": "8.4.1",
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.0.1",
@@ -104,5 +104,10 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
+  },
+  "pnpm": {
+    "overrides": {
+      "@faker-js/faker": "8.4.1"
+    }
   }
 }

@@ -4,6 +4,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  '@faker-js/faker': 8.4.1
+
 importers:
 
   .:
@@ -21,8 +24,8 @@ importers:
         specifier: ^4.17.0
         version: 4.17.0
       '@faker-js/faker':
-        specifier: ^10.1.0
-        version: 10.1.0
+        specifier: 8.4.1
+        version: 8.4.1
       '@nestjs/common':
         specifier: ^11.0.1
         version: 11.1.9(class-transformer@0.5.1)(class-validator@0.14.3)(reflect-metadata@0.2.2)(rxjs@7.8.2)
@@ -94,7 +97,7 @@ importers:
         version: 0.3.27(pg@8.16.3)(reflect-metadata@0.2.2)(ts-node@10.9.2(@swc/core@1.15.3)(@types/node@22.19.1)(typescript@5.9.3))
       typeorm-extension:
         specifier: ^3.7.2
-        version: 3.7.2(@faker-js/faker@10.1.0)(typeorm@0.3.27(pg@8.16.3)(reflect-metadata@0.2.2)(ts-node@10.9.2(@swc/core@1.15.3)(@types/node@22.19.1)(typescript@5.9.3)))
+        version: 3.7.2(@faker-js/faker@8.4.1)(typeorm@0.3.27(pg@8.16.3)(reflect-metadata@0.2.2)(ts-node@10.9.2(@swc/core@1.15.3)(@types/node@22.19.1)(typescript@5.9.3)))
     devDependencies:
       '@eslint/eslintrc':
         specifier: ^3.2.0
@@ -792,9 +795,9 @@ packages:
     resolution: {integrity: sha512-43/qtrDUokr7LJqoF2c3+RInu/t4zfrpYdoSDfYyhg52rwLV6TnOvdG4fXm7IkSB3wErkcmJS9iEhjVtOSEjjA==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
-  '@faker-js/faker@10.1.0':
-    resolution: {integrity: sha512-C3mrr3b5dRVlKPJdfrAXS8+dq+rq8Qm5SNRazca0JKgw1HQERFmrVb0towvMmw5uu8hHKNiQasMaR/tydf3Zsg==}
-    engines: {node: ^20.19.0 || ^22.13.0 || ^23.5.0 || >=24.0.0, npm: '>=10'}
+  '@faker-js/faker@8.4.1':
+    resolution: {integrity: sha512-XQ3cU+Q8Uqmrbf2e0cIC/QN43sTBSC8KF12u29Mb47tWrt2hAgBXSgpZMj4Ao8Uk0iJcU99QsOCaIL8934obCg==}
+    engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0, npm: '>=6.14.13'}
 
   '@hapi/accept@6.0.3':
     resolution: {integrity: sha512-p72f9k56EuF0n3MwlBNThyVE5PXX40g+aQh+C/xbKrfzahM2Oispv3AXmOIU51t3j77zay1qrX7IIziZXspMlw==}
@@ -5566,7 +5569,7 @@ packages:
     engines: {node: ^20.19.0 || ^22.13.0 || ^23.5.0 || >=24.0.0}
     hasBin: true
     peerDependencies:
-      '@faker-js/faker': '>=8.4.1'
+      '@faker-js/faker': 8.4.1
       typeorm: ~0.3.0
 
   typeorm@0.3.27:
@@ -6994,7 +6997,7 @@ snapshots:
       '@eslint/core': 0.17.0
       levn: 0.4.1
 
-  '@faker-js/faker@10.1.0': {}
+  '@faker-js/faker@8.4.1': {}
 
   '@hapi/accept@6.0.3':
     dependencies:
@@ -12853,9 +12856,9 @@ snapshots:
 
   typedarray@0.0.6: {}
 
-  typeorm-extension@3.7.2(@faker-js/faker@10.1.0)(typeorm@0.3.27(pg@8.16.3)(reflect-metadata@0.2.2)(ts-node@10.9.2(@swc/core@1.15.3)(@types/node@22.19.1)(typescript@5.9.3))):
+  typeorm-extension@3.7.2(@faker-js/faker@8.4.1)(typeorm@0.3.27(pg@8.16.3)(reflect-metadata@0.2.2)(ts-node@10.9.2(@swc/core@1.15.3)(@types/node@22.19.1)(typescript@5.9.3))):
     dependencies:
-      '@faker-js/faker': 10.1.0
+      '@faker-js/faker': 8.4.1
       consola: 3.4.2
       envix: 1.5.0
       locter: 2.2.1

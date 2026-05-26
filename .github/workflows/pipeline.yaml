@@ -22,10 +22,10 @@ jobs:
           version: 10
           run_install: false
 
-      - name: Setup Node.js ${{matrix.node_version}}
+      - name: Setup Node.js ${{matrix.node-version}}
         uses: actions/setup-node@v4
         with:
-          node-version: ${{matrix.node_version}}
+          node-version: ${{matrix.node-version}}
           cache: 'pnpm'
 
       - name: Install dependencies
@@ -51,10 +51,10 @@ jobs:
           version: 10
           run_install: false
 
-      - name: Setup Node.js ${{matrix.node_version}}
+      - name: Setup Node.js ${{matrix.node-version}}
         uses: actions/setup-node@v4
         with:
-          node-version: ${{matrix.node_version}}
+          node-version: ${{matrix.node-version}}
           cache: 'pnpm'
 
       - name: Enable PNPM build scritps
@@ -74,7 +74,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.ACCESS_KEY_AWS }}
           aws-secret-access-key: ${{ secrets.SECRET_ACCESS_KEY_AWS }}
-          aws-region: ${{ env.REGION_AWS }}
+          aws-region: ${{ secrets.REGION_AWS }}
 
       - name: Deploy to AWS
         env: 

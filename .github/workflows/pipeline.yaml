@@ -42,11 +42,11 @@ jobs:
         node-version: [20.x]
 
     steps:
-    - name: Check current directory
-      run: |
-        pwd
-        ls -la
-        find . -maxdepth 3 -name "serverless.yml" -o -name "serverless.yaml"
+      - name: Check current directory
+        run: |
+          pwd
+          ls -la
+          find . -maxdepth 3 -name "serverless.yml" -o -name "serverless.yaml"
 
       - name: Checkout repository
         uses: actions/checkout@v4

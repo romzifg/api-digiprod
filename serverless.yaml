@@ -21,7 +21,7 @@ provider:
   memorySize: 2048
   timeout: 30
   stage: ${opt:stage, 'development'}
-  region: ${env.REGION_AWS, 'ap-southeast-1'}
+  region: ap-southeast-1
 
   apiGateway:
     usagePlan: 

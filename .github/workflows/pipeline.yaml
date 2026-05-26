@@ -57,7 +57,7 @@ jobs:
           node-version: ${{matrix.node-version}}
           cache: 'pnpm'
 
-      - name: Enable PNPM build scritps
+      - name: Enable PNPM build scripts
         run: pnpm config set enable-pre-post-scripts true
 
       - name: Install dependencies
@@ -70,7 +70,7 @@ jobs:
         run: pnpm add -g serverless@v3 @nestjs/cli
 
       - name: Configure AWS credential
-        uses: aws-action/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.ACCESS_KEY_AWS }}
           aws-secret-access-key: ${{ secrets.SECRET_ACCESS_KEY_AWS }}

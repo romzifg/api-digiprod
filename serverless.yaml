@@ -43,7 +43,7 @@ provider:
   ecr:
     images:
       app:
-        path: .
+        path: ./
   
   environment:
     PORT: ${env.PORT}

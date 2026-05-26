@@ -42,12 +42,6 @@ jobs:
         node-version: [20.x]
 
     steps:
-      - name: Check current directory
-        run: |
-          pwd
-          ls -la
-          find . -maxdepth 3 -name "serverless.yml" -o -name "serverless.yaml"
-
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -83,7 +77,7 @@ jobs:
           aws-region: ${{ secrets.REGION_AWS }}
 
       - name: Deploy to AWS
-        env: 
+        env:
           PORT: ${{ secrets.PORT }}
           SECRET_ACCESS_KEY_AWS: ${{ secrets.SECRET_ACCESS_AWS }}
           ACCESS_KEY_AWS: ${{ secrets.ACCESS_KEY_AWS }}
@@ -92,7 +86,7 @@ jobs:
           PRIVATE_API_KEY: ${{ secrets.PRIVATE_API_KEY }}
           USAGE_PLAN_AWS: ${{ secrets.USAGE_PLAN_AWS }}
           API_KEY_NAME: ${{ secrets.API_KEY_NAME }}
-          PARAMETER_STORES_NAMES: ${{ secrets.PARAMETER_STORES_NAMES }}
+          PARAMETER_STORES_NAMES: ${{ secrets.PARAMETER_STORE_NAMES }}
           NODE_ENV: ${{ secrets.NODE_ENV }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
           JWT_EXPIRES_IN: ${{ secrets.JWT_EXPIRES_IN }}

@@ -24,6 +24,7 @@ provider:
   region: ap-southeast-1
 
   apiGateway:
+    apiKeySourceType: HEADER
     usagePlan: 
       quota: 
         limit: 1000000
@@ -67,14 +68,23 @@ functions:
         - dist/lambda.handler
     maximumRetryAttempts: 2
     events:
+      # Root path
       - http:
           path: /
           method: GET
           private: false
           cors: true
-      
+
       - http:
-          path: /{proxy+}
+          path: /api/v1/{proxy+}
           method: ANY
-          private: false
-          cors: true
+          private: false 
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+            allowCredentials: false

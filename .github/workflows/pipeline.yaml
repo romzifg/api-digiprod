@@ -86,7 +86,7 @@ jobs:
           PRIVATE_API_KEY: ${{ secrets.PRIVATE_API_KEY }}
           USAGE_PLAN_AWS: ${{ secrets.USAGE_PLAN_AWS }}
           API_KEY_NAME: ${{ secrets.API_KEY_NAME }}
-          PARAMETER_STORES_NAMES: ${{ secrets.PARAMETER_STORE_NAMES }}
+          PARAMETER_STORE_NAMES: ${{ secrets.PARAMETER_STORE_NAMES }}
           NODE_ENV: ${{ secrets.NODE_ENV }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
           JWT_EXPIRES_IN: ${{ secrets.JWT_EXPIRES_IN }}

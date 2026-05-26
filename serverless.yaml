@@ -68,25 +68,13 @@ functions:
     maximumRetryAttempts: 2
     events:
       - http:
-          path: /api/v1/auth/login
-          method: POST
-          private: false
-          cors: true
-
-      - http:
-          path: /api/v1/payments/webhook
-          method: POST
-          private: false
-          cors: true
-
-      - http:
-          path: /api/v1/{proxy+}
-          method: ANY
-          private: false
-          cors: true
-
-      - http:
           path: /
           method: GET
+          private: false
+          cors: true
+      
+      - http:
+          path: /{proxy+}
+          method: ANY
           private: false
           cors: true

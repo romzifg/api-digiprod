@@ -6,29 +6,11 @@ useDotenv: true
 plugins:
   - serverless-dotenv-plugin
   - serverless-add-api-key
-  - serverless-plugin-warmup
 
 custom: 
   apiKeys:
     - name: ${env.API_KEY_NAME}
       value: ${env.PRIVATE_API_KEY}
-
-  warmup:
-    default:
-      enabled: true
-      events: 
-        - schedule: rate(5 minutes)
-      concurrency: 1
-      prewarm: true
-      payload: 
-        source: 'serverless-plugin-warmup'
-      timeout: 10
-      name: ${self:service}-${self:provider.stage}-warmup
-      folderName: '_warmup'
-      cleanFolder: true
-      memorySize: 128
-      tags: 
-        warmed: 'true'
   
 package: 
   individually: false  # ✅ Changed untuk Docker deployment
@@ -84,9 +66,6 @@ functions:
       command:
         - dist/lambda.handler
     maximumRetryAttempts: 2
-    warmup:
-      default:
-        enabled: true
     events:
       - http:
           path: /api/v1/payments/webhook

@@ -68,10 +68,23 @@ functions:
     maximumRetryAttempts: 2
     events:
       - http:
+          path: /api/v1/auth/login
+          method: POST
+          private: false
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - Authorization
+              - authentication
+              - X-API-Key
+              - x-api-key
+
+      - http:
           path: /api/v1/payments/webhook
           method: POST
           private: false
-          cors: 
+          cors:
             origin: '*'
             headers:
               - Content-Type
@@ -79,11 +92,12 @@ functions:
               - authentication
               - X-API-Key
               - x-api-key
-      - http: 
+
+      - http:
           path: /
           method: GET
           private: true
-          cors: 
+          cors:
             origin: '*'
             headers:
               - Content-Type
@@ -91,11 +105,12 @@ functions:
               - authentication
               - X-API-Key
               - x-api-key
-      - http: 
+
+      - http:
           path: /{proxy+}
           method: ANY
           private: true
-          cors: 
+          cors:
             origin: '*'
             headers:
               - Content-Type

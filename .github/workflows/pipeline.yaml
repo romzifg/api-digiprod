@@ -2,7 +2,7 @@ name: Digprod Pipeline
 
 on:
   push:
-    branch:
+    branches:
       - master
 
 jobs:

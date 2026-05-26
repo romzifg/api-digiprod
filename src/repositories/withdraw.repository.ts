@@ -50,6 +50,10 @@ export class WithdrawRepository {
         return await this.withdrawRepository.findOne(params)
     }
 
+    public async findByUserUuid(params: FindOneOptions<Withdraw>): Promise<Withdraw[]> {
+        return await this.withdrawRepository.find(params)
+    }
+
     public async create(data: DeepPartial<Withdraw>, queryRunner: QueryRunner): Promise<Withdraw> {
         data.code = await this.generateWithdrawCode()
         const newWithdraw = queryRunner.manager.create(Withdraw, data);

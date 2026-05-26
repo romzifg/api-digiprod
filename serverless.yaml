@@ -107,7 +107,7 @@ functions:
               - x-api-key
 
       - http:
-          path: /{proxy+}
+          path: /api/v1/{proxy+}
           method: ANY
           private: true
           cors:
@@ -118,3 +118,8 @@ functions:
               - authentication
               - X-API-Key
               - x-api-key
+
+      - http:
+          path: /{proxy+}
+          method: ANY
+          private: true

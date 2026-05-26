@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import moment from "moment";
+import { approvalStatusContant } from 'src/constants/approval-status.contant';
 import { roleConstant } from 'src/constants/role.constant';
 import { typeConstant } from 'src/constants/type.constant';
 import { OrderRepository } from 'src/repositories/order.repository';
@@ -7,6 +8,7 @@ import { ProductRepository } from 'src/repositories/product.repository';
 import { UserActivityHistoryRepository } from 'src/repositories/user-activity-history.repository';
 import { UserProductRepository } from 'src/repositories/user-product.repository';
 import { UserRepository } from 'src/repositories/user.repository';
+import { WithdrawRepository } from 'src/repositories/withdraw.repository';
 import { MoreThanOrEqual } from 'typeorm';
 
 @Injectable()
@@ -18,7 +20,8 @@ export class DashboardService {
         private readonly orderRepository: OrderRepository,
         private readonly userActivityRepository: UserActivityHistoryRepository,
         private readonly userProductRepository: UserProductRepository,
-        private readonly userRepository: UserRepository
+        private readonly userRepository: UserRepository,
+        private readonly withdrawRepository: WithdrawRepository,
     ) { }
 
     public async getStatistic(author: any): Promise<any> {
@@ -140,15 +143,29 @@ export class DashboardService {
     public async getTotalRevenue(author: any): Promise<any> {
         try {
             let authorUuid: string = '';
+            let totalWithdraw = 0
 
             if (author.role == roleConstant.CREATOR) {
                 authorUuid = author.uuid;
+                const withdraw = await this.withdrawRepository.findByUserUuid({
+                    where: {
+                        user: {
+                            uuid: authorUuid
+                        },
+                        status: approvalStatusContant.APPROVED
+                    }
+                })
+                for (const item of withdraw) {
+                    totalWithdraw += item.amount
+                }
             }
 
             const revenue =  await this.orderRepository.getTotalRevenue(authorUuid)
 
             return {
-                revenue: revenue
+                revenue: revenue,
+                withdraw: totalWithdraw,
+                remaining_balance: revenue - totalWithdraw
             }
         } catch (error) {
             this.logger.error(error);

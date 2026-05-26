@@ -13,7 +13,7 @@ custom:
       value: ${env.PRIVATE_API_KEY}
   
 package: 
-  individually: false  # ✅ Changed untuk Docker deployment
+  individually: false
 
 provider: 
   name: aws
@@ -21,7 +21,7 @@ provider:
   memorySize: 2048
   timeout: 30
   stage: ${opt:stage, 'development'}
-  region: ap-southeast-1  # ✅ Hardcoded - Singapore region
+  region: ${env.REGION_AWS}
 
   apiGateway:
     usagePlan: 

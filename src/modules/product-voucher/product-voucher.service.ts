@@ -7,7 +7,7 @@ import { ProductVoucherRepository } from 'src/repositories/product-voucher.repos
 import { ProductRepository } from 'src/repositories/product.repository';
 import { UserRepository } from 'src/repositories/user.repository';
 
-import * as moment from 'moment'
+import moment from "moment"
 import { randomUUID } from 'crypto';
 import { DataSource } from 'typeorm';
 import { ProductVoucherDetail } from 'src/entities/product-voucher-detail.entity';

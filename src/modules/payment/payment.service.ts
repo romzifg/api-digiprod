@@ -1,6 +1,6 @@
 import { randomUUID } from 'crypto';
 import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
-import * as moment from 'moment';
+import moment from "moment";
 import { generalConstant } from 'src/constants/general.constant';
 import { orderContant } from 'src/constants/order.contant';
 import { paymentMethodContant } from 'src/constants/payment-method.contant';

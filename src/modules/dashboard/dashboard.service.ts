@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import * as moment from 'moment';
+import moment from "moment";
 import { roleConstant } from 'src/constants/role.constant';
 import { typeConstant } from 'src/constants/type.constant';
 import { OrderRepository } from 'src/repositories/order.repository';

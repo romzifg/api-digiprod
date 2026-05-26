@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import * as moment from "moment";
+import  moment from "moment";
 import { orderContant } from "src/constants/order.contant";
 import { Order } from "src/entities/order.entity";
 import { IQueryParams } from "src/interfaces/database.interface";

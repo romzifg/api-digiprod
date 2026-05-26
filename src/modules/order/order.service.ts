@@ -1,7 +1,7 @@
 import { PaymentRepository } from './../../repositories/payment.repository';
 import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { randomUUID } from 'crypto';
-import * as moment from 'moment';
+import moment from "moment";
 import { MidtransClient } from 'src/clients/midtrans.client';
 import { generalConstant } from 'src/constants/general.constant';
 import { orderContant } from 'src/constants/order.contant';

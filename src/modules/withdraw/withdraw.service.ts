@@ -17,7 +17,7 @@ import { roleConstant } from 'src/constants/role.constant';
 import { generalConstant } from 'src/constants/general.constant';
 import { WithdrawDto } from 'src/dto/withdraw.dto';
 import { DeepPartial, QueryRunner } from 'typeorm';
-import * as moment from 'moment';
+import moment from "moment";
 
 @Injectable()
 export class WithdrawService {

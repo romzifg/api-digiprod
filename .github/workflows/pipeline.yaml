@@ -73,13 +73,13 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.ACCESS_KEY_AWS }}
-          aws-secret-access-key: ${{ secrets.SECRET_ACCESS_KEY_AWS }}
+          aws-secret-access-key: ${{ secrets.SECRET_ACCESS_AWS }}
           aws-region: ${{ secrets.REGION_AWS }}
 
       - name: Deploy to AWS
         env: 
           PORT: ${{ secrets.PORT }}
-          SECRET_ACCESS_KEY_AWS: ${{ secrets.SECRET_ACCESS_KEY_AWS }}
+          SECRET_ACCESS_KEY_AWS: ${{ secrets.SECRET_ACCESS_AWS }}
           ACCESS_KEY_AWS: ${{ secrets.ACCESS_KEY_AWS }}
           REGION_AWS: ${{ secrets.REGION_AWS }}
           BUCKET_NAME_AWS: ${{ secrets.BUCKET_NAME_AWS }}
